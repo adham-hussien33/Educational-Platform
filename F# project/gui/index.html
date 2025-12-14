@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>F# Project - Student Grades GUI</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Student Grades Management System</h1>
+        <p class="subtitle">F# Project API Testing Platform</p>
+        <div class="connection-status" id="connectionStatus">
+          <span class="status-indicator" id="statusIndicator"></span>
+          <span id="statusText">Disconnected</span>
+        </div>
+      </header>
+
+      <!-- Login Section -->
+      <section class="card login-card" id="loginCard">
+        <h2>Login</h2>
+        <div class="login-section">
+          <div class="form-group">
+            <label for="apiUrl">API URL:</label>
+            <input
+              type="text"
+              id="apiUrl"
+              value="http://localhost:5039"
+              class="text-input"
+              placeholder="http://localhost:5039"
+            />
+          </div>
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input
+              type="text"
+              id="username"
+              class="text-input"
+              placeholder="Enter Username"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input
+              type="password"
+              id="password"
+              class="text-input"
+              placeholder="Enter Password"
+            />
+          </div>
+          <button id="loginBtn" class="btn btn-primary">Login</button>
+          <div id="loginMessage" class="message"></div>
+        </div>
+      </section>
+
+      <!-- Main Content (shown after login) -->
+      <div id="mainContent" style="display: none">
+        <!-- User Info -->
+        <section class="card user-info-card">
+          <h2>Logged in as: <span id="currentUser"></span></h2>
+          <p>Role: <span id="currentRole"></span></p>
+          <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+        </section>
+
+        <!-- Students Management (Admin Only) -->
+        <section class="card" id="studentsManagementSection">
+          <h2>Students Management</h2>
+          <div class="form-section">
+            <h3>Add New Student</h3>
+            <div class="form-group">
+              <label for="studentName"
+                >Student Name (will be used as username):</label
+              >
+              <input
+                type="text"
+                id="studentName"
+                class="text-input"
+                placeholder="Student Name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="studentId">Student ID:</label>
+              <input
+                type="text"
+                id="studentId"
+                class="text-input"
+                placeholder="Student ID (e.g., STU001)"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="studentEmail">Email:</label>
+              <input
+                type="email"
+                id="studentEmail"
+                class="text-input"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="studentPassword"
+                >Password (for student account):</label
+              >
+              <input
+                type="password"
+                id="studentPassword"
+                class="text-input"
+                placeholder="Enter password for student account"
+                required
+              />
+            </div>
+            <button id="addStudentBtn" class="btn btn-success">
+              Add Student
+            </button>
+          </div>
+          <div class="message" id="studentMessage"></div>
+
+          <!-- Edit Student Form (hidden by default) -->
+          <div
+            class="form-section"
+            id="editStudentSection"
+            style="display: none"
+          >
+            <h3>Edit Student</h3>
+            <input type="hidden" id="editStudentDbId" />
+            <div class="form-group">
+              <label for="editStudentName">Student Name:</label>
+              <input
+                type="text"
+                id="editStudentName"
+                class="text-input"
+                placeholder="Student Name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="editStudentId">Student ID:</label>
+              <input
+                type="text"
+                id="editStudentId"
+                class="text-input"
+                placeholder="Student ID (e.g., STU001)"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="editStudentEmail">Email:</label>
+              <input
+                type="email"
+                id="editStudentEmail"
+                class="text-input"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="editStudentPassword"
+                >New Password (leave empty to keep current):</label
+              >
+              <input
+                type="password"
+                id="editStudentPassword"
+                class="text-input"
+                placeholder="Enter new password (optional)"
+              />
+            </div>
+            <div class="form-group">
+              <button id="saveStudentBtn" class="btn btn-success">
+                Save Changes
+              </button>
+              <button id="cancelEditBtn" class="btn btn-secondary">
+                Cancel
+              </button>
+            </div>
+          </div>
+
+          <div class="students-list-section">
+            <h3>All Students</h3>
+            <button id="refreshStudentsBtn" class="btn btn-primary">
+              Refresh
+            </button>
+            <div id="studentsList" class="students-list"></div>
+          </div>
+        </section>
+
+        <!-- Grades Management (Admin Only) -->
+        <section class="card" id="gradesManagementSection">
+          <h2>Grades Management</h2>
+          <div class="form-section">
+            <h3>Add Grade</h3>
+            <div class="form-group">
+              <label for="gradeStudentId">Student ID:</label>
+              <input
+                type="text"
+                id="gradeStudentId"
+                class="text-input"
+                placeholder="Student ID (e.g., STU001)"
+              />
+            </div>
+            <div class="form-group">
+              <label for="gradeSubject">Subject:</label>
+              <input
+                type="text"
+                id="gradeSubject"
+                class="text-input"
+                placeholder="Subject (e.g., Math)"
+              />
+            </div>
+            <div class="form-group">
+              <label for="gradeScore">Score:</label>
+              <input
+                type="number"
+                step="0.1"
+                id="gradeScore"
+                class="text-input"
+                placeholder="Score"
+              />
+            </div>
+            <div class="form-group">
+              <label for="gradeMaxScore">Max Score:</label>
+              <input
+                type="number"
+                step="0.1"
+                id="gradeMaxScore"
+                class="text-input"
+                placeholder="Max Score (e.g., 100)"
+              />
+            </div>
+            <button id="addGradeBtn" class="btn btn-success">Add Grade</button>
+          </div>
+          <div class="message" id="gradeMessage"></div>
+        </section>
+
+        <!-- Student Grades View -->
+        <section class="card">
+          <h2 id="viewGradesTitle">View Student Grades</h2>
+          <div id="studentNote" class="message info" style="display: none">
+            <strong>Note:</strong> As a Student, you can only view your own
+            grades.
+          </div>
+          <div class="form-section" id="adminViewGradesSection">
+            <div class="form-group">
+              <label for="viewStudentUsername">Search by Username:</label>
+              <input
+                type="text"
+                id="viewStudentUsername"
+                class="text-input"
+                placeholder="Enter student username (e.g., johndoe)"
+              />
+              <button id="viewGradesBtn" class="btn btn-primary">
+                View Grades
+              </button>
+            </div>
+          </div>
+          <div id="studentGradesDisplay" class="grades-display"></div>
+        </section>
+
+        <!-- Statistics -->
+        <section class="card">
+          <h2>Class Statistics</h2>
+          <div class="form-section">
+            <div class="form-group">
+              <label for="statisticsSubject"
+                >Filter by Subject (optional):</label
+              >
+              <input
+                type="text"
+                id="statisticsSubject"
+                class="text-input"
+                placeholder="Enter subject name (e.g., Math) or leave empty for all subjects"
+              />
+            </div>
+            <button id="refreshStatsBtn" class="btn btn-primary">
+              Refresh Statistics
+            </button>
+          </div>
+          <div id="statisticsDisplay" class="statistics-display"></div>
+        </section>
+      </div>
+
+      <footer>
+        <p>F# Project - Student Grades Management System</p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
